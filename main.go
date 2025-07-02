@@ -19,6 +19,7 @@ func main() {
 	e.GET(prefijo+"ejemploJson", ruta.GetJSON)
 
 	e.POST(prefijo+"ejemplo", ruta.EjemploPost)
+	e.POST(prefijo+"ejemploDatos", ruta.PostDatos)
 	e.PUT(prefijo+"ejemplo", ruta.EjemploPut)
 	e.DELETE(prefijo+"ejemplo", ruta.EjemploDelete)
 
