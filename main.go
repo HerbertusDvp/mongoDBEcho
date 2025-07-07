@@ -2,16 +2,34 @@ package main
 
 import (
 	"mongoEcho/ruta"
+	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 	echo "github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var prefijo string = "/api/v1/"
 
 func main() {
 	e := echo.New()
+	e.Static("/public", "public")
+
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// CORS default
+	// Allows requests from any origin wth GET, HEAD, PUT, POST or DELETE method.
+	// e.Use(middleware.CORS())
+
+	// CORS restricted
+	// Allows requests from any `https://labstack.com` or `https://labstack.net` origin
+	// wth GET, PUT, POST or DELETE method.
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"https://labstack.com", "https://labstack.net"},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
 
 	e.GET(prefijo+"ejemplo", ruta.EjemploGet)
 	e.GET(prefijo+"ejemplo/:id", ruta.GetParametros)
@@ -22,6 +40,8 @@ func main() {
 	e.POST(prefijo+"ejemploDatos", ruta.PostDatos)
 	e.PUT(prefijo+"ejemplo", ruta.EjemploPut)
 	e.DELETE(prefijo+"ejemplo", ruta.EjemploDelete)
+
+	e.POST(prefijo+"upload", ruta.EjemploUpload)
 
 	errorVariables := godotenv.Load()
 	if errorVariables != nil {
