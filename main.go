@@ -1,6 +1,7 @@
 package main
 
 import (
+	"mongoEcho/database"
 	"mongoEcho/ruta"
 	"net/http"
 	"os"
@@ -15,6 +16,9 @@ var prefijo string = "/api/v1/"
 func main() {
 	e := echo.New()
 	e.Static("/public", "public")
+
+	// Conexion a la db
+	database.ComprobarConexion()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -41,7 +45,10 @@ func main() {
 	e.PUT(prefijo+"ejemplo", ruta.EjemploPut)
 	e.DELETE(prefijo+"ejemplo", ruta.EjemploDelete)
 
-	e.POST(prefijo+"upload", ruta.EjemploUpload)
+	e.POST(prefijo+"upload", ruta.EjemploUpload) // Carga un archivo
+
+	e.POST(prefijo+"categorias", ruta.CategoriaPost) // Insert
+	e.GET(prefijo+"categorias", ruta.CategoriaGet)   // Listar / consulta
 
 	errorVariables := godotenv.Load()
 	if errorVariables != nil {

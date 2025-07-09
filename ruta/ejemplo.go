@@ -22,6 +22,8 @@ func EjemploGet(c echo.Context) error {
 		"cabecera": c.Request().Header.Get("Authorization"),
 	}
 
+	fmt.Println("Ejecuta controlador EjemploGet")
+
 	return c.JSON(200, respuesta)
 }
 
