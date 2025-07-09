@@ -47,8 +47,11 @@ func main() {
 
 	e.POST(prefijo+"upload", ruta.EjemploUpload) // Carga un archivo
 
-	e.POST(prefijo+"categorias", ruta.CategoriaPost) // Insert
-	e.GET(prefijo+"categorias", ruta.CategoriaGet)   // Listar / consulta
+	e.POST(prefijo+"categorias", ruta.CategoriaPost)         // Insert
+	e.GET(prefijo+"categorias", ruta.CategoriaGet)           // Listar / consulta
+	e.GET(prefijo+"categorias/:id", ruta.CategoriaGetByID)   // coculta por id
+	e.PUT(prefijo+"categorias/:id", ruta.CategoriaSetByID)   // modifica por id
+	e.DELETE(prefijo+"categorias/:id", ruta.CategoriaDelete) // borra por id
 
 	errorVariables := godotenv.Load()
 	if errorVariables != nil {

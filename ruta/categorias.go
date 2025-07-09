@@ -10,6 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -79,4 +80,109 @@ func CategoriaGet(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, results)
+}
+
+func CategoriaGetByID(c echo.Context) error {
+	objectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+
+	if err != nil {
+		fmt.Println("Error con objectID: ", err)
+	}
+
+	var result bson.M
+
+	if err := database.CategoriaColeccion.FindOne(context.TODO(), bson.M{"_id": objectID}).Decode(&result); err != nil {
+		respuesta := map[string]string{
+			"estado":  "error",
+			"mensaje": "Error en el FindOne: ",
+		}
+
+		return c.JSON(400, respuesta)
+	}
+
+	return c.JSON(200, result)
+}
+
+func CategoriaSetByID(c echo.Context) error {
+
+	var body dto.CategoriaDto
+
+	err := json.NewDecoder(c.Request().Body).Decode(&body)
+
+	if err != nil {
+		respuesta := map[string]string{
+			"estado":  "error",
+			"mensaje": "Error con el NewDecoder",
+		}
+
+		return c.JSON(400, respuesta)
+	}
+
+	if len(body.Nombre) == 0 {
+		respuesta := map[string]string{
+			"estado":  "error",
+			"mensaje": "Error: Nombre vacio",
+		}
+
+		return c.JSON(400, respuesta)
+	}
+
+	var result bson.M
+	objectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err := database.CategoriaColeccion.FindOne(context.TODO(), bson.M{"_id": objectID}).Decode(&result); err != nil {
+		respuesta := map[string]string{
+			"estado":  "error",
+			"mensaje": "Error en finOne",
+		}
+
+		return c.JSON(400, respuesta)
+	}
+
+	registro := make(map[string]interface{})
+
+	registro["nombre"] = body.Nombre
+	registro["ice"] = "Good time"
+
+	updateString := bson.M{
+		"$set": registro,
+	}
+
+	database.CategoriaColeccion.UpdateOne(context.TODO(), bson.M{"_id": bson.M{"$eq": objectID}}, updateString)
+
+	respuesta := map[string]string{
+		"estado":  "ok",
+		"mensaje": "Registro modificado",
+	}
+
+	return c.JSON(200, respuesta)
+}
+
+func CategoriaDelete(c echo.Context) error {
+
+	var result bson.M
+
+	objectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+
+	if err != nil {
+		fmt.Println("Error en object id")
+	}
+
+	if err := database.CategoriaColeccion.FindOne(context.TODO(), bson.M{"_id": objectID}).Decode(&result); err != nil {
+		respuesta := map[string]string{
+			"estado":  "ok",
+			"mensaje": "Error con FindOne de CategoriaDelete",
+		}
+
+		c.JSON(400, respuesta)
+	}
+	// Where id = objectID
+	database.CategoriaColeccion.DeleteOne(context.TODO(), bson.M{"_id": objectID})
+
+	//Respuesta exitosa
+	respuesta := map[string]string{
+		"estado":  "ok",
+		"mensaje": "Elemento eliminado",
+	}
+
+	return c.JSON(400, respuesta)
 }
