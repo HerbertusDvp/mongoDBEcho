@@ -53,6 +53,10 @@ func main() {
 	e.PUT(prefijo+"categorias/:id", ruta.CategoriaSetByID)   // modifica por id
 	e.DELETE(prefijo+"categorias/:id", ruta.CategoriaDelete) // borra por id
 
+	e.GET(prefijo+"productos", ruta.ProductoGet)
+	e.GET(prefijo+"productosJoin", ruta.ProductoGetJoin)
+	e.POST(prefijo+"productos", ruta.ProductoPost)
+
 	errorVariables := godotenv.Load()
 	if errorVariables != nil {
 

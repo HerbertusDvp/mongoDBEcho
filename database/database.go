@@ -14,6 +14,7 @@ var MongoDB = "mongoBase" // Nombre de la base de datos
 
 // Nombre de la "Tabla"
 var CategoriaColeccion = ClienteMongo.Database(MongoDB).Collection("Categorias")
+var ProductoColeccion = ClienteMongo.Database(MongoDB).Collection("Producto")
 var clientOptions = options.Client().ApplyURI("mongodb://localhost:27017/" + MongoDB)
 
 func ConectarDB() *mongo.Client {
