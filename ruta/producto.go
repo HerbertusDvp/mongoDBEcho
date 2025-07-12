@@ -104,3 +104,35 @@ func ProductoGetJoin(c echo.Context) error {
 
 	return c.JSON(200, results)
 }
+
+func ProductoGetById(c echo.Context) error {
+
+	objectID, err := primitive.ObjectIDFromHex(c.Param("id")) // id > valor de la url
+
+	fmt.Println("objectID: ", objectID)
+	if err != nil {
+		fmt.Println("Error con objectID en ProductoGetByID: ", err)
+	}
+
+	pipeline := []bson.M{
+		{"$match": bson.M{"categoria_id": objectID}}, // Filtro de la coleccion principal
+		{"$lookup": bson.M{"from": "Categorias", "localField": "categoria_id", "foreignField": "_id", "as": "categoria"}}, // Join
+		{"$sort": bson.M{"_id": -1}},
+	}
+
+	cursor, err := database.ProductoColeccion.Aggregate(context.TODO(), pipeline)
+
+	fmt.Println("Contenido de cursor: ", cursor)
+
+	if err != nil {
+		fmt.Print("Error en el cursor de prodcutoGetById")
+	}
+
+	var results []bson.M
+
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		fmt.Println("Error en curso.All")
+	}
+
+	return c.JSON(200, results)
+}

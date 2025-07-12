@@ -54,7 +54,8 @@ func main() {
 	e.DELETE(prefijo+"categorias/:id", ruta.CategoriaDelete) // borra por id
 
 	e.GET(prefijo+"productos", ruta.ProductoGet)
-	e.GET(prefijo+"productosJoin", ruta.ProductoGetJoin)
+	e.GET(prefijo+"productos/:id", ruta.ProductoGetById)
+	e.GET(prefijo+"productosJoin", ruta.ProductoGetJoin) // COnsulta con dos tablas
 	e.POST(prefijo+"productos", ruta.ProductoPost)
 
 	errorVariables := godotenv.Load()
